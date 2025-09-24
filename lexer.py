@@ -1,20 +1,27 @@
 class Lexer:
 
 	def __init__(self, inp):
+		
+		inp = inp.replace('(', ' ( ')
+		inp = inp.replace(')', ' ) ')
+
 		self.inp = inp
 		self.position = 0
 		self.currentChar = self.inp[self.position] if self.position < len(self.inp) else None
 		self.tokenTypes = {
 
 			int : 'NUMBER',
-			'+' : 'PLUS',
-			'-' : 'MINUS',
-			'*' : 'MULTIPLY',
-			'/' : 'DIVIDE',
-			'(' : 'LPAREN',
-			')' : 'RPAREN'
+			#'+' : 'PLUS',
+			#'-' : 'MINUS',
+			#'*' : 'MULTIPLY',
+			#'/' : 'DIVIDE',
+			str : 'SYMBOL'
+			#'(' : 'LPAREN',
+			#')' : 'RPAREN'
 
 		}
+
+
 
 	def getNextChar(self):
 		self.position += 1
@@ -31,8 +38,17 @@ class Lexer:
 			returnNum += self.currentChar
 			self.getNextChar()
 
-		self.position -= 1
+		#self.position -= 1
 		return int(returnNum)
+
+	def getString(self):
+		returnStr = ''
+
+		while self.currentChar is not None and type(self.currentChar) == str and not(self.currentChar).isspace():
+			returnStr += self.currentChar
+			self.getNextChar()
+
+		return returnStr
 
 
 	def generateToken(self):
@@ -45,8 +61,8 @@ class Lexer:
 			if self.currentChar.isdigit():
 				return [self.tokenTypes[int], self.getNumber()]
 
-			elif self.currentChar in self.tokenTypes:
-				return [self.tokenTypes[self.currentChar], self.currentChar]
+			elif type(self.currentChar) in self.tokenTypes:
+				return [self.tokenTypes[str], self.getString()]
 
 			else:
 				raise Exception(f'Invalid character: {self.currentChar}')
@@ -61,10 +77,7 @@ class Lexer:
 				break
 
 			returnList.append(token)
-			self.getNextChar()
+			#self.getNextChar()
 
 		return returnList
 
-inp = '5+2'
-lexer = Lexer(inp)
-print(lexer.lex())
