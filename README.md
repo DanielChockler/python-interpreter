@@ -7,3 +7,4 @@ A Python interpreter for the programming language MLTS
 To start the shell, run the following command from your terminal:
 '''sh
 python3 PATH/shell.py
+'''sh
