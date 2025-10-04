@@ -1,10 +1,7 @@
 class Lexer:
 
 	def __init__(self, inp):
-		
-		inp = inp.replace('(', ' ( ')
-		inp = inp.replace(')', ' ) ')
-
+				
 		self.inp = inp
 		self.position = 0
 		self.currentChar = self.inp[self.position] if self.position < len(self.inp) else None
@@ -20,8 +17,6 @@ class Lexer:
 			#')' : 'RPAREN'
 
 		}
-
-
 
 	def getNextChar(self):
 		self.position += 1
@@ -44,7 +39,7 @@ class Lexer:
 	def getString(self):
 		returnStr = ''
 
-		while self.currentChar is not None and type(self.currentChar) == str and not(self.currentChar).isspace():
+		while self.currentChar is not None and type(self.currentChar) == str and not(self.currentChar.isspace()) and not(self.currentChar.isdigit()):
 			returnStr += self.currentChar
 			self.getNextChar()
 
