@@ -29,8 +29,8 @@ class Shell:
 			print(f'{command} : {message[1]}')
 
 	def commandFileRead(self, args):
-		filename = args[0]
 		try:
+			filename = args[0]
 			with open(filename, 'r') as file:
 				print(file.read())
 
@@ -51,6 +51,7 @@ class Shell:
 	def commandLex(self, args):
 		if not args:
 			print('Usage: :lex <expression>')
+			return
 		
 		try:
 			inputString = ' '.join(args)
@@ -63,7 +64,8 @@ class Shell:
 
 	def commandParse(self, args):
 		if not args:
-			print('Usage: :lex <expression>')
+			print('Usage: :parse <expression>')
+			return
 
 		try:
 			inputString = ' '.join(args)
@@ -115,8 +117,8 @@ class Shell:
 			except KeyboardInterrupt:
 				self.commandExit([])
 
-			except EOFEError:
-				self.commandExit([])
+			#except EOFEError:
+				#self.commandExit([])
 
 if __name__ == '__main__':
 	shell = Shell()

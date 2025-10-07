@@ -1,6 +1,4 @@
-# Simple Shell
-
-A Python interpreter for the programming language MLTS
+# A Python interpreter for the programming language MLTS
 
 ## How to Run
 
