@@ -1,5 +1,7 @@
 import time
 import readline
+from parser import Parser
+from lexer import Lexer
 
 class Shell:
 
@@ -9,21 +11,22 @@ class Shell:
 
 		self.commands = {
 
-			'exit' : [self.commandExit, 'Exits TSLW'],
+			'exit' : [self.commandExit, 'Exits MLTS'],
 			":help" : [self.commandHelp, 'Displays this help message'],
 			'-f' : [self.commandFileRead, 'Reads and prints the contents of a file'],
-			':timing' : [self.commandTiming, 'Toggle the execution timer']
+			':timing' : [self.commandTiming, 'Toggle the execution timer'],
+			':lex' : [self.commandLex, 'Displays the output of the lexer'],
+			':parse' : [self.commandParse, 'Displays the output of the parser']
 		}
 
 	def commandExit(self, args):
-		print('Exiting TSLW')
+		print('Exiting MLTS')
 		self._isRunning = False
 
 	def commandHelp(self, args):
 		print('Available commands:')
 		for command, message in self.commands.items():
 			print(f'{command} : {message[1]}')
-
 
 	def commandFileRead(self, args):
 		filename = args[0]
@@ -45,19 +48,56 @@ class Shell:
 		status = 'enabled' if self._isTiming else 'disabled'
 		print(f'Timing inputs is {status}.')
 
+	def commandLex(self, args):
+		if not args:
+			print('Usage: :lex <expression>')
+		
+		try:
+			inputString = ' '.join(args)
+			lexer = Lexer(inputString)
+			tokens = lexer.lex()
+			print(tokens)
+
+		except Exception as e:
+			print(f'Error: {e}')
+
+	def commandParse(self, args):
+		if not args:
+			print('Usage: :lex <expression>')
+
+		try:
+			inputString = ' '.join(args)
+			lexer = Lexer(inputString)
+			tokens = lexer.lex()
+
+			parser = Parser(tokens)
+			print(parser.parseProgram())
+
+		except Exception as e:
+			print(f'Error: {e}')
+
+
 	def defaultHandler(self, inp):
-		print(inp)
+		try:
+			lexer = Lexer(inp)
+			tokens = lexer.lex()
+
+			parser = Parser(tokens)
+
+			print(parser.prettyPrinting())
+
+		except Exception as e:
+			print(f'Error: {e}')
+
 
 	def run(self):
 		while self._isRunning:
 			try:
-				inp = input('TSLW: ')
+				inp = input('MLTS> ')
 
 				inpParts = inp.strip().split()
 				command = inpParts[0]
 				args = inpParts[1:]
-
-
 
 				if command in self.commands:
 					self.commands[command][0](args)

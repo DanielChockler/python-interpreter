@@ -7,14 +7,14 @@ class Lexer:
 		self.currentChar = self.inp[self.position] if self.position < len(self.inp) else None
 		self.tokenTypes = {
 
-			int : 'NUMBER',
-			#'+' : 'PLUS',
-			#'-' : 'MINUS',
-			#'*' : 'MULTIPLY',
-			#'/' : 'DIVIDE',
-			str : 'SYMBOL'
-			#'(' : 'LPAREN',
-			#')' : 'RPAREN'
+			int : 'INT',
+			float : 'FLOAT',
+			'+' : 'PLUS',
+			'-' : 'MINUS',
+			'*' : 'MULTIPLY',
+			'/' : 'DIVIDE',
+			'(' : 'LPAREN',
+			')' : 'RPAREN'
 
 		}
 
@@ -28,18 +28,29 @@ class Lexer:
 
 	def getNumber(self):
 		returnNum = ''
+		dotCount = 0
 
-		while self.currentChar is not None and self.currentChar.isdigit():
+		while self.currentChar is not None and (self.currentChar.isdigit() or self.currentChar == '.'):
+			if self.currentChar == '.':
+				if dotCount == 1:
+					break
+				dotCount += 1
+
 			returnNum += self.currentChar
 			self.getNextChar()
 
-		#self.position -= 1
-		return int(returnNum)
+		if dotCount == 1:
+			if returnNum == '.':
+				return ['STRING', '.']
+			return [self.tokenTypes[float], float(returnNum)]
+
+		else:
+			return [self.tokenTypes[int], int(returnNum)]
 
 	def getString(self):
 		returnStr = ''
 
-		while self.currentChar is not None and type(self.currentChar) == str and not(self.currentChar.isspace()) and not(self.currentChar.isdigit()):
+		while self.currentChar is not None and not(self.currentChar.isspace()) and not(self.currentChar.isdigit()) and not(self.currentChar in self.tokenTypes):
 			returnStr += self.currentChar
 			self.getNextChar()
 
@@ -53,14 +64,21 @@ class Lexer:
 				self.getNextChar()
 				continue
 
-			if self.currentChar.isdigit():
-				return [self.tokenTypes[int], self.getNumber()]
+			if self.currentChar.isdigit() or self.currentChar == '.':
+				if self.currentChar == '.' and (self.position + 1 >= len(self.inp) or not self.inp[self.position + 1].isdigit()):
+					char = self.currentChar
+					self.getNextChar()
+					return ['SYMBOL', char]
 
-			elif type(self.currentChar) in self.tokenTypes:
-				return [self.tokenTypes[str], self.getString()]
+				return self.getNumber()
+
+			elif self.currentChar in self.tokenTypes:
+				char = self.currentChar
+				self.getNextChar()
+				return [self.tokenTypes[char], char]
 
 			else:
-				raise Exception(f'Invalid character: {self.currentChar}')
+				return ['STRING', self.getString()]
 
 		return 'EOF'
 
@@ -72,7 +90,5 @@ class Lexer:
 				break
 
 			returnList.append(token)
-			#self.getNextChar()
 
 		return returnList
-
