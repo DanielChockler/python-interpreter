@@ -1,13 +1,15 @@
 import time
 import readline
-from parser import Parser
+from parser import Parser, SExpr, Token
 from lexer import Lexer
+from evaluator import Evaluator
 
 class Shell:
 
 	def __init__(self):
 		self._isRunning = True
 		self._isTiming = False
+		self.evaluator = Evaluator()
 
 		self.commands = {
 
@@ -85,8 +87,20 @@ class Shell:
 			tokens = lexer.lex()
 
 			parser = Parser(tokens)
+			ast = parser.parseProgram()
 
-			print(parser.prettyPrinting())
+			parts = []
+
+			for item in ast:
+				if isinstance(item, SExpr):
+					parts.append(self.evaluator.eval(item))
+
+				else:
+					parts.append(item.value)
+
+			print(' '.join(map(str, parts)))
+
+			
 
 		except Exception as e:
 			print(f'Error: {e}')
